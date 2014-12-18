@@ -68,6 +68,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener, Chan
         if(no_channel)
             return;
 
+        
         channel=new JChannel(props);
         if(gen != null)
             channel.addAddressGenerator(gen);
