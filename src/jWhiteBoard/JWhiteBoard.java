@@ -52,6 +52,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 				this.sizeBrush += width;
 		}//if else
 
+		
 	}// method
 	private boolean useState = false;
 	private long stateTimeout = 5000;
