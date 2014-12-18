@@ -39,21 +39,6 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 	private static Color backgroundColor = Color.WHITE;
 	boolean noChannel = false;
 	boolean jmx;
-	private int sizeBrush = 10;
-	public int getSizeBrush() {
-		return sizeBrush;
-	}// method
-
-	public void setSizeBrush(int width) {
-		if (width > 0) {
-			this.sizeBrush += width;
-		} else {
-			if (sizeBrush > 2)
-				this.sizeBrush += width;
-		}//if else
-
-		
-	}// method
 	private boolean useState = false;
 	private long stateTimeout = 5000;
 	private boolean use_unicasts = false;
@@ -299,27 +284,16 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 		leaveButton = new JButton("Exit");
 		leaveButton.setFont(defaultFont);
 		leaveButton.addActionListener(this);
-		// add button chinh sua kich thuoc co
-        sizeT = new JButton("+");
-		sizeT.setFont(defaultFont);
-		sizeT.addActionListener(this);
-
-		sizeS = new JButton("-");
-		sizeS.setFont(defaultFont);
-		sizeS.addActionListener(this);
+		
 		subPanel.add("South", clearButton);
-        subPanel.add("South", leaveButton);
-        subPanel.add("South", sizeT);
-        subPanel.add("South", sizeS);
-        mainFrame.getContentPane().add("South", subPanel);
-        mainFrame.setBackground(backgroundColor);
-        clearButton.setForeground(Color.blue);
-        leaveButton.setForeground(Color.blue);
-        sizeT.setForeground(Color.blue);
-        sizeS.setForeground(Color.blue);
-        mainFrame.pack();
-        mainFrame.setLocation(15, 25);
-        mainFrame.setBounds(new Rectangle(250, 250));
+		subPanel.add("South", leaveButton);
+		mainFrame.getContentPane().add("South", subPanel);
+		mainFrame.setBackground(backgroundColor);
+		clearButton.setForeground(Color.blue);
+		leaveButton.setForeground(Color.blue);
+		mainFrame.pack();
+		mainFrame.setLocation(15, 25);
+		mainFrame.setBounds(new Rectangle(250, 250));
 
 		if (!noChannel && useState) {
 			channel.connect(groupName, null, stateTimeout);
@@ -474,25 +448,18 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 	 * Action when click [Clear] or [Leave] button
 	 */
 	public void actionPerformed(ActionEvent e) {
-		 String     command=e.getActionCommand();
-	        if(e.getSource()==clearButton) {
-	            if(noChannel) {
-	                clearPanel();
-	                return;
-	            }
-	            sendClearPanelMsg();
-	        }
-	        else if(e.getSource()==leaveButton) {
-	            stop();
-	        } else if (e.getSource() == sizeT) {
-				setSizeBrush(1);
-			} else if (e.getSource() == sizeS) {
-				setSizeBrush(-1);
-	        }
-	        
-	            System.out.println("Unknown action");
-	    }
-
+		String command = e.getActionCommand();
+		if ("Clear".equals(command)) {
+			if (noChannel) {
+				clearPanel();
+				return;
+			}
+			sendClearPanelMsg();
+		} else if ("Leave".equals(command)) {
+			stop();
+		} else
+			System.out.println("Unknown action");
+	}
 
 	/**
 	 * Leave Group and close JWhiteBoard
@@ -692,11 +659,10 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 		 * When do a mouse drag, get coordinates ( X and Y) of the mouse, then
 		 * send Draw command as a message to member of Group
 		 */
-		
-        public void mouseDragged(MouseEvent e) {
-			int x = e.getX(), y = e.getY(); // fixed
+		public void mouseDragged(MouseEvent e) {
+			int x = e.getX(), y = e.getY();
 			DrawCommand comm = new DrawCommand(DrawCommand.DRAW, x, y,
-					drawColor.getRGB(), sizeBrush);
+					drawColor.getRGB());
 
 			if (noChannel) {
 				drawPoint(comm);
@@ -731,7 +697,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 				return;
 			Color col = new Color(c.rgb);
 			gr.setColor(col);
-			gr.fillOval(c.x, c.y, c.brushSize, c.brushSize);
+			gr.fillOval(c.x, c.y, 10, 10);
 			repaint();
 			if (state != null) {
 				synchronized (state) {
@@ -739,38 +705,40 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 				}
 			}
 		}
+
 		/**
 		 * Clear all contents
 		 */
-	    public void clear() {
-            if(gr == null) return;
-            gr.clearRect(0, 0, getSize().width, getSize().height);
-            repaint();
-            if(state != null) {
-                synchronized(state) {
-                    state.clear();
-                }
-            }
-        }
+		public void clear() {
+			if (gr == null)
+				return;
+			gr.clearRect(0, 0, getSize().width, getSize().height);
+			repaint();
+			if (state != null) {
+				synchronized (state) {
+					state.clear();
+				}
+			}
+		}
 
 		/** Draw the entire panel from the state */
-	      public void drawState() {
-	            // clear();
-	            Map.Entry entry;
-	            Point pt;
-	            Color col;
-	            synchronized(state) {
-	                for(Iterator it=state.entrySet().iterator(); it.hasNext();) {
-	                    entry=(Map.Entry)it.next();
-	                    pt=(Point)entry.getKey();
-	                    col=(Color)entry.getValue();
-	                    gr.setColor(col);
-	                    gr.fillOval(pt.x, pt.y, getSizeBrush(), getSizeBrush());
+		public void drawState() {
+			// clear();
+			Map.Entry entry;
+			Point pt;
+			Color col;
+			synchronized (state) {
+				for (Iterator it = state.entrySet().iterator(); it.hasNext();) {
+					entry = (Map.Entry) it.next();
+					pt = (Point) entry.getKey();
+					col = (Color) entry.getValue();
+					gr.setColor(col);
+					gr.fillOval(pt.x, pt.y, 10, 10);
 
-	                }
-	            }
-	            repaint();
-	        }
+				}
+			}
+			repaint();
+		}
 
 		public Dimension getPreferredSize() {
 			return preferred_size;
