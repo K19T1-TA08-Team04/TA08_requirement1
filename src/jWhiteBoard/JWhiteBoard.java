@@ -33,7 +33,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener, Chan
     private final Random           random=new Random(System.currentTimeMillis());
     private final Font             defaultFont=new Font("Helvetica",Font.PLAIN,12);
     private final Color            drawColor=selectColor();
-    private static final Color     backgroundColor=Color.WHITE; //fix
+    private static  Color     backgroundColor=Color.WHITE; 
     boolean                        noChannel=false;
     boolean                        jmx;
     private boolean                useState=false;
@@ -117,9 +117,9 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener, Chan
      * Set name for Group
      * @param groupName
      */
-    public void setGroupName(String GroupName) {
+    public void setGroupName(String groupName) {
         if(groupName != null)
-            groupName=GroupName;//fix
+            groupName=groupName;
     }
 
 
@@ -239,7 +239,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener, Chan
         int red=Math.abs(random.nextInt()) % 255;
         int green=Math.abs(random.nextInt()) % 255;
         int blue=Math.abs(random.nextInt()) % 255;
-        return new Color(red, green, blue);
+        return new Color(red, blue, blue);
     }
 
 
@@ -268,10 +268,10 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener, Chan
         drawPanel.setBackground(backgroundColor);
         subPanel=new JPanel();
         mainFrame.getContentPane().add("Center", drawPanel);
-        clearButton=new JButton("Clear");
+        clearButton=new JButton("Clean");
         clearButton.setFont(defaultFont);
         clearButton.addActionListener(this);
-        leaveButton=new JButton("Leave");
+        leaveButton=new JButton("Exit");
         leaveButton.setFont(defaultFont);
         leaveButton.addActionListener(this);
         subPanel.add("South", clearButton);
@@ -283,7 +283,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener, Chan
         mainFrame.pack();
         mainFrame.setLocation(15, 25);
         mainFrame.setBounds(new Rectangle(250, 250));
-        setTitle();
+
         if(!noChannel && useState) {
             channel.connect(groupName, null, stateTimeout);
         }
@@ -439,14 +439,14 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener, Chan
      */
     public void actionPerformed(ActionEvent e) {
         String     command=e.getActionCommand();
-        if(e.getSource()==clearButton) {//fix
+        if("Clear".equals(command)) {
             if(noChannel) {
                 clearPanel();
                 return;
             }
             sendClearPanelMsg();
         }
-        else if(e.getSource()==leaveButton) {//fix
+        else if("Leave".equals(command)) {
             stop();
         }
         else
